@@ -1,12 +1,20 @@
 body{
-    background:#000;
+    background:#333;
+    background-image: url('img/asphalt.jpg');
+    background-repeat: repeat;
 }
 
-.delivery-truck{
-    background:#CC0000;
-    width:30px;
-    height:30px;
+.truck {
+    width:48px;
+    height:40px;
     position:absolute;
+}
+
+.truck-parcels {
+    font-size: 20px;
+    color: #EEE;
+    position: absolute;
+    left: 23px;
 }
 
 .depot{
