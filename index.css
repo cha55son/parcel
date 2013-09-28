@@ -1,4 +1,4 @@
-body{
+body {
     background:#333;
     background-image: url('img/asphalt.jpg');
     background-repeat: repeat;
@@ -23,6 +23,14 @@ body{
     background:white;
     display:block;
     border:2px solid red;
+}
+
+.present {
+    position: absolute;
+    background-image: url('img/present.png');
+    background-size: 20px 20px;
+    height: 20px;
+    width: 20px;
 }
 
 .visit {
