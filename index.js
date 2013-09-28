@@ -3,12 +3,12 @@ function Truck(options) {
         speed: 0.10,
         top: 10, // Absolute position to spawn the truck.
         left: 10,
-        depot: '.depot', // Class for the depot the truck should visit.
+        depot: '.depot', // Class of the depot the truck should visit. If multiple are provided the closest is used.
         addresses: $(), // The addresses on the truck's route.
         html: '',
         arrivedAtDepot: function() { },
         finishedLoading: function() { },
-        collectParcel: function() { },
+        collectedParcel: function() { },
         deliveredParcel: function() { }
     }, options);
     this.$truck = $('<div class="truck">' + this.settings.html + '</div>').appendTo('body').eq(0);
@@ -21,6 +21,8 @@ function Truck(options) {
     });
 };
 
+// Send the truck to the depot to pickup the
+// proper amount of parcels for delivery.
 Truck.prototype.load = function(parcels, callback) {
     parcels = parcels || 1;
     callback = callback || function() { };
@@ -33,13 +35,14 @@ Truck.prototype.load = function(parcels, callback) {
         // Pickup parcels
         for (var i = 0; i < parcels; i++) {
            self.parcels++; 
-           self.settings.collectParcel.call(self);
+           self.settings.collectedParcel.call(self);
         }
         self.settings.finishedLoading.call(self);
         callback();
     });
 };
 
+// Get the address where the truck should park for delivery.
 Truck.prototype.getAddrParkPos = function(addr) {
     var pos = addr.position();
     var top = pos.top + (addr.height() / 2 - this.$truck.height() / 2);
@@ -47,6 +50,7 @@ Truck.prototype.getAddrParkPos = function(addr) {
     return { top: top, left: left };
 };
 
+// Simply moves the truck to the proper position.
 // Using a grid and the A* algorithm to avoid obstacles
 // would be really cool with this function.
 Truck.prototype.moveTo = function(top, left, callback) {
@@ -91,29 +95,52 @@ Truck.prototype.getSpeedTo = function(top, left) {
     return dist / this.settings.speed;
 };
 
+// Protect the global NS.
+(function() {
+    var placeType = function(top, left, type) {
+        type = type || 'delivery';
+        var deliveryOptions = ['house', 'office', 'factory'];
+        if (type == 'delivery')
+            type = deliveryOptions[Math.floor(Math.random() * 3)] + ' delivery';
+        var el = $('<div class="' + type + ' visit"></div>').appendTo('body');
+        el.css({
+            top: (top - el.height() / 2) + 'px',
+            left: (left - el.width() / 2) + 'px'
+        });
+    };
 
-$(document).ready(function() {
-    $(document).keypress(function(e) {
-        if (e.which == 13) { // Enter
-            var truck = new Truck({
-                html: '<img src="img/truck.png" /><span class="truck-parcels" data-cnt="0">+0</span>',
-                top: 8,
-                left: 8,
-                depot: '.depot',
-                addresses: $('.delivery-address'),
-                arrivedAtDepot: function() { console.log('Arrived at depot'); },
-                finishedLoading: function() { console.log('Finished loading'); },
-                collectParcel: function() { 
-                    var $parcelCnt = $('.truck-parcels', truck.$truck);
-                    var cnt = parseInt($parcelCnt.data('cnt'));
-                    $parcelCnt.data('cnt', ++cnt).text('+' + cnt);
-                },
-                deliveredParcel: function() { 
-                    var $parcelCnt = $('.truck-parcels', truck.$truck);
-                    var cnt = parseInt($parcelCnt.data('cnt'));
-                    $parcelCnt.data('cnt', --cnt).text('+' + cnt);
-                }
-            });
-        }
+    $(document).ready(function() {
+        $(document).keypress(function(e) {
+            console.log(e.which);
+            if (e.which == 13) { // Enter, create and ship truck
+                var truck = new Truck({
+                    html: '<img src="img/truck.png" /><span class="truck-parcels" data-cnt="0">+0</span>',
+                    top: 8,
+                    left: 8,
+                    depot: '.depot',
+                    addresses: $('.delivery'),
+                    arrivedAtDepot: function() { console.log('Arrived at depot'); },
+                    finishedLoading: function() { console.log('Finished loading'); },
+                    collectedParcel: function() { 
+                        var $parcelCnt = $('.truck-parcels', truck.$truck);
+                        var cnt = parseInt($parcelCnt.data('cnt'));
+                        $parcelCnt.data('cnt', ++cnt).text('+' + cnt);
+                    },
+                    deliveredParcel: function() { 
+                        var $parcelCnt = $('.truck-parcels', truck.$truck);
+                        var cnt = parseInt($parcelCnt.data('cnt'));
+                        $parcelCnt.data('cnt', --cnt).text('+' + cnt);
+                    }
+                });
+            }
+        });
+        $(document).mouseup(function(e) {
+            console.log(e.which);
+            if (e.shiftKey && e.which == 1) { // Shift + Left click, place a delivery location.
+                placeType(e.pageY, e.pageX, 'delivery');
+            } else if (e.which == 1) { // Left click, place a depot.
+                placeType(e.pageY, e.pageX, 'depot');
+            }
+        });
     });
-});
+})();
