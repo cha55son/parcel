@@ -1,0 +1,57 @@
+body{
+    background:#000;
+}
+
+.delivery-truck{
+    background:#CC0000;
+    width:30px;
+    height:30px;
+    position:absolute;
+}
+
+.depot{
+    position:absolute;
+    width:150px;
+    height:150px;
+    background:#ccc;
+    border:3px dashed #666;
+    top:200px;
+    left:300px;
+}
+
+.delivery-address{
+    position:absolute;
+    border:3px dashed yellow;
+}
+
+.parcel{
+    width:5px; 
+    height:5px;
+    background:white;
+    display:block;
+    border:2px solid red;
+}
+
+#house{
+    width:50px;
+    height:50px;
+    top:340px;
+    left:700px;
+    background:#663300;
+}
+
+#office{
+    width:80px;
+    height:150px;
+    top:100px;
+    left:650px;
+    background:white;
+}
+
+#factory{
+    width:160px;
+    height:60px;
+    top:500px;
+    left:600px;
+    background:grey;
+}
