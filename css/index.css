@@ -1,0 +1,93 @@
+body {
+    background:#333;
+    background-image: url('../img/asphalt.jpg');
+    background-repeat: repeat;
+}
+
+.truck {
+    width:48px;
+    height:40px;
+    position:absolute;
+}
+
+.truck-parcels {
+    font-size: 20px;
+    color: #EEE;
+    position: absolute;
+    left: 23px;
+}
+
+.parcel {
+    width:5px; 
+    height:5px;
+    background:white;
+    display:block;
+    border:2px solid red;
+}
+
+.present {
+    position: absolute;
+    background-image: url('../img/present.png');
+    background-size: 20px 20px;
+    height: 20px;
+    width: 20px;
+}
+
+.delivery {
+
+} .delivery:hover .delivery-options {
+    display: block;
+} .delivery:hover .delivery-image {
+    opacity: 0.75;
+} .delivery:hover .delivery-address {
+    opacity: 0.75;
+}
+
+.delivery-options {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.delivery-address {
+    color: #FFF;
+    background-color: #158618;
+    font-size: 10px;
+    white-space: nowrap;
+    text-align: center;
+    padding: 5px;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+}
+
+.delivery-image {
+    height: 75px;
+    width: 75px;
+    margin: 0 auto;
+    background-size: 75px 75px;
+}
+
+.visit {
+    position:absolute;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.depot .delivery-image {
+    background-image: url('../img/depot.png');
+}
+
+.house .delivery-image {
+    background-image: url('../img/house.png');
+}
+
+.office .delivery-image {
+    background-image: url('../img/office.png');
+}
+
+.factory .delivery-image {
+    background-image: url('../img/factory.png');
+}

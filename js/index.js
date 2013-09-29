@@ -1,25 +1,41 @@
 // Protect the global NS.
 (function() {
-    var placeType = function(top, left, type) {
-        type = type || 'delivery';
-        var deliveryOptions = ['house', 'office', 'factory'];
-        if (type == 'delivery')
-            type = deliveryOptions[Math.floor(Math.random() * 3)] + ' delivery';
-        var el = $('<div class="' + type + ' visit"></div>').appendTo('body');
-        el.css({
-            top: (top - el.height() / 2) + 'px',
-            left: (left - el.width() / 2) + 'px'
-        });
-    };
-
     $(document).ready(function() {
+        // Events
+        $(window).on('Parcel.DeliveryLocation.Order', function(e, data) {
+            console.log('Location: ' + data.location.address + ' has placed an order.');
+        });
+
+        // Add the warehouse
+        var warehouse = new Parcel.Warehouse({
+            top: $(window).height() / 2, 
+            left: $(window).width() / 2
+        });
+        // Add three delivery locations and request orders
+        var offset = 100;
+        var loc1 = new Parcel.DeliveryLocation({
+            top: offset,
+            left: $(window).width() - offset,
+            type: 'office'
+        });
+        var loc2 = new Parcel.DeliveryLocation({
+            top: $(window).height() - offset,
+            left: $(window).width()  - offset,
+            type: 'factory'
+        });
+        var loc3 = new Parcel.DeliveryLocation({
+            top: $(window).height() / 2,
+            left: $(window).width() - offset,
+            type: 'house'
+        });
+        loc1.order();
+        loc2.order();
+        loc3.order();
+
         $(document).keypress(function(e) {
-            console.log(e.which);
             if (e.which == 13) { // Enter, create and ship truck
-                var truck = new Truck({
+                var truck = new Parcel.Truck({
                     html: '<img src="img/truck.png" /><span class="truck-parcels" data-cnt="0">+0</span>',
-                    top: 8,
-                    left: 8,
                     depot: '.depot',
                     addresses: $('.delivery'),
                     arrivedAtDepot: function() { console.log('Arrived at depot'); },
@@ -40,15 +56,16 @@
                             top: pos.top + this.$truck.height() - present.height(),
                             left: pos.left + this.$truck.width() - present.width()
                         });
+                    },
+                    finishedDelivering: function() {
+                        this.remove();
                     }
                 });
             }
         });
         $(document).mouseup(function(e) {
-            if (e.shiftKey && e.which == 1) { // Shift + Left click, place a depot.
-                placeType(e.pageY, e.pageX, 'depot');
-            } else if (e.which == 1) { // Left click, place a delivery location.
-                placeType(e.pageY, e.pageX, 'delivery');
+            if (e.which == 1) { // Left click, place a delivery location.
+                // placeType(e.pageY, e.pageX, 'delivery');
             }
         });
     });
