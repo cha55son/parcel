@@ -3,11 +3,16 @@
     $(document).ready(function() {
         // Events
         $(window).on('Parcel.DeliveryLocation.Order', function(e, data) {
-            console.log('Location: ' + data.location.address + ' has placed an order.');
+            // A delivery location has placed an order so create the parcel and
+            // add it to the depot.
+            var parcel = new Parcel.Parcel({
+                to: data.location
+            });
+            depot.add(parcel);
         });
 
         // Add the warehouse
-        var warehouse = new Parcel.Warehouse({
+        var depot = new Parcel.Depot({
             top: $(window).height() / 2, 
             left: $(window).width() / 2
         });

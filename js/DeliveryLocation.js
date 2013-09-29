@@ -19,9 +19,9 @@ Parcel.DeliveryLocation = function(options) {
     }
     this.address = this.settings.address;
     this.$el = $([
-        '<div class="', this.settings.type, ' delivery visit">',
+        '<div class="', this.settings.type, ' delivery visit" data-addr="', this.address, '">',
             '<div class="delivery-image"></div>',
-            '<div class="delivery-address">', this.settings.address, '</div>',
+            '<div class="delivery-address">', this.address, '</div>',
             '<div class="delivery-options">',
                 '<button class="btn btn-sm btn-default delivery-order">Order</button>',
             '</div>',
