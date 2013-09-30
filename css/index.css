@@ -2,7 +2,22 @@ body {
     background:#333;
     background-image: url('../img/asphalt.jpg');
     background-repeat: repeat;
+    -moz-user-select: none;
+    -webkit-user-select: none; 
+    -ms-user-select: none; 
+    user-select: none;
 }
+
+.btn-help {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.help-location-img {
+    height: 50px;
+    width: 50px;
+}   
 
 .truck {
     width:48px;
@@ -41,6 +56,8 @@ body {
 
 .delivery {
 
+} .delivery:hover {
+    outline: 3px dashed #FFF;
 } .delivery:hover .delivery-options {
     display: block;
 } .delivery:hover .delivery-image {

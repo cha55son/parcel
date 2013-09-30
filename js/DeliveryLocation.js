@@ -14,7 +14,7 @@ Parcel.DeliveryLocation = function(options) {
     // Create a random address if one is not provided.
     if (this.settings.address === null) {
         var streetNames = ['Lynnford', 'Sycamore', 'Clifdon', 'Pine', 'Maple', 'Cedar', 'Fourth', 'Fifth', 'Second', 'Hill', 'Lake'];
-        var roads = ['Rd.', 'Ct.', 'Ln.', 'Hwy.'];
+        var roads = ['Rd.', 'Ct.', 'Ln.', 'Hwy.', 'Dr.'];
         this.settings.address = Math.floor(Math.random() * 9999) + ' ' + 
                                 streetNames[Math.floor(Math.random() * streetNames.length)] + ' ' + 
                                 roads[Math.floor(Math.random() * roads.length)];

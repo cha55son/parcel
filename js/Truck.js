@@ -76,6 +76,7 @@ Parcel.Truck.prototype.moveTo = function(top, left, callback) {
 // Traveling sales man algorithm would be good here.
 Parcel.Truck.prototype.deliver = function(parcels, callback) {
     callback = callback || function() { };
+    if (parcels.length == 0) return callback();
     var parcel = parcels[0];
     var pos = this.getAddrParkPos(parcel.to.$el);
     var self = this;
