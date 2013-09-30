@@ -35,6 +35,7 @@ Parcel.Depot.prototype.add = function(parcel) {
     ].join(''));
 };
 
+// Notify anyone who cares that the Depot is ready to ship.
 Parcel.Depot.prototype.ship = function(e) {
     if (this.storage.length == 0) {
         alert('There must be orders before shipping. Try clicking "order" on a delivery location.');
@@ -43,7 +44,7 @@ Parcel.Depot.prototype.ship = function(e) {
     $(window).trigger('Parcel.Depot.Ship', { depot: this });
 };
 
-// Just simply empties the storage and returns all parcels.
+// Simply empties the storage and returns all parcels.
 // Convience method so outer classes dont affect the inner working of this class.
 Parcel.Depot.prototype.loadParcels = function() {
     var parcels = this.storage;

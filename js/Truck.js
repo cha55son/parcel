@@ -11,7 +11,6 @@ Parcel.Truck = function(options) {
         deliveredParcel: function() { },
         finishedDelivering: function() { }
     }, options);
-    // $ denotes jQuery objects.
     this.$depot = $(this.settings.depot);
     this.$el = $([
         '<div class="truck">',
@@ -35,8 +34,7 @@ Parcel.Truck = function(options) {
     });
 };
 
-// Send the truck to the depot to pickup the
-// proper amount of parcels for delivery.
+// Send the truck to the depot to pickup parcels for delivery.
 Parcel.Truck.prototype.load = function(callback) {
     callback = callback || function() { };
     // Find the depot
@@ -50,9 +48,9 @@ Parcel.Truck.prototype.load = function(callback) {
 };
 
 // Get the address where the truck should park for delivery.
-Parcel.Truck.prototype.getAddrParkPos = function(addr) {
-    var pos = addr.position();
-    var top = pos.top + (addr.height() / 2 - this.$el.height() / 2);
+Parcel.Truck.prototype.getAddrParkPos = function($addr) {
+    var pos = $addr.position();
+    var top = pos.top + ($addr.height() / 2 - this.$el.height() / 2);
     var left = pos.left - this.$el.width();
     return { top: top, left: left };
 };

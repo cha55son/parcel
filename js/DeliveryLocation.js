@@ -9,6 +9,7 @@ Parcel.DeliveryLocation = function(options) {
         address: null // A unique address for this location. ex. 1678 or 6584 Lynnford Rd.
     }, options);
     this.parcels = 0;
+    // Create a random type if one is not provided.
     if (this.settings.type === null || $.inArray(this.settings.type, this.types) === -1)
         this.settings.type = this.types[Math.floor(Math.random() * 3)];
     // Create a random address if one is not provided.
@@ -20,6 +21,8 @@ Parcel.DeliveryLocation = function(options) {
                                 roads[Math.floor(Math.random() * roads.length)];
     }
     this.address = this.settings.address;
+    // I would typically use Underscore.js templates here, 
+    // but this project doesn't warrant the use of the Underscore.js lib.
     this.$el = $([
         '<div class="', this.settings.type, ' delivery visit" data-addr="', this.address, '">',
             '<div class="delivery-address">', this.address, '</div>',
