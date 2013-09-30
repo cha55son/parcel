@@ -10,6 +10,37 @@
             });
             depot.add(parcel);
         });
+        $(window).on('Parcel.Depot.Ship', function(e, data) {
+            var truck = new Parcel.Truck({
+                arrivedAtDepot: function() { 
+                    // Load all the parcels in the depot
+                    // storage into the truck.
+                    var parcels = depot.loadParcels();
+                    for (var i in parcels)
+                        this.add(parcels[i]);
+                },
+                deliveredParcel: function() { 
+                    // Drop present :)
+                    var pos = this.$el.position();
+                    var present = $('<div class="present"></div>').appendTo('body');
+                    present.css({
+                        top: pos.top + this.$el.height() - present.height(),
+                        left: pos.left + this.$el.width() - present.width()
+                    });
+                },
+                finishedDelivering: function() {
+                    this.remove();
+                }
+            });
+        });
+        // Allow the user to place delivery locations.
+        $(document).mouseup(function(e) {
+            if (e.which != 1 || !e.shiftKey) return;
+            var loc = new Parcel.DeliveryLocation({
+                top: e.pageY,
+                left: e.pageX
+            });
+        });
 
         // Add the warehouse
         var depot = new Parcel.Depot({
@@ -36,42 +67,5 @@
         loc1.order();
         loc2.order();
         loc3.order();
-
-        $(document).keypress(function(e) {
-            if (e.which == 13) { // Enter, create and ship truck
-                var truck = new Parcel.Truck({
-                    html: '<img src="img/truck.png" /><span class="truck-parcels" data-cnt="0">+0</span>',
-                    depot: '.depot',
-                    addresses: $('.delivery'),
-                    arrivedAtDepot: function() { console.log('Arrived at depot'); },
-                    finishedLoading: function() { console.log('Finished loading'); },
-                    collectedParcel: function() { 
-                        var $parcelCnt = $('.truck-parcels', truck.$truck);
-                        var cnt = parseInt($parcelCnt.data('cnt'));
-                        $parcelCnt.data('cnt', ++cnt).text('+' + cnt);
-                    },
-                    deliveredParcel: function() { 
-                        var $parcelCnt = $('.truck-parcels', truck.$truck);
-                        var cnt = parseInt($parcelCnt.data('cnt'));
-                        $parcelCnt.data('cnt', --cnt).text('+' + cnt);
-                        // Drop present :)
-                        var pos = this.$truck.position();
-                        var present = $('<div class="present"></div>').appendTo('body');
-                        present.css({
-                            top: pos.top + this.$truck.height() - present.height(),
-                            left: pos.left + this.$truck.width() - present.width()
-                        });
-                    },
-                    finishedDelivering: function() {
-                        this.remove();
-                    }
-                });
-            }
-        });
-        $(document).mouseup(function(e) {
-            if (e.which == 1) { // Left click, place a delivery location.
-                // placeType(e.pageY, e.pageX, 'delivery');
-            }
-        });
     });
 })();

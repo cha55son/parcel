@@ -5,34 +5,27 @@ Parcel.Truck = function(options) {
         speed: 0.10,
         top: 10, // Absolute position to spawn the truck.
         left: 10,
-        depot: '.depot', // Class of the depot the truck should visit. If multiple are provided the first placed depot is used.
-        addresses: [], // The addresses on the truck's route.
-        html: '',
+        depot: '.depot', // Class of the depot the truck should visit.
         // Callbacks
         arrivedAtDepot: function() { },
-        finishedLoading: function() { },
-        collectedParcel: function() { },
         deliveredParcel: function() { },
         finishedDelivering: function() { }
     }, options);
     // $ denotes jQuery objects.
     this.$depot = $(this.settings.depot);
-    this.$addresses = this.settings.addresses;
-    if (this.$depot.length == 0) {
-        alert("You have not placed a depot. Place a depot with Shift + Left Click.");
-        return;
-    }
-    if (this.$addresses.length == 0) {
-        alert("The truck has no deliveries. Place a delivery location with Left Click.");
-        return;
-    }
-    this.$truck = $('<div class="truck">' + this.settings.html + '</div>').appendTo('body').eq(0);
-    this.parcels = 0;
-    // Ship the items
+    this.$el = $([
+        '<div class="truck">',
+            '<img src="img/truck.png" />',
+            '<div class="truck-next-stop delivery-address"></div>',
+            '<span class="truck-parcels" data-cnt="0">+0</span>',
+        '</div>'
+    ].join('')).appendTo('body');
+    this.parcels = [];
+    // Send the truck to the depot to load parcels.
     var self = this;
-    this.load(this.$addresses.length, function() {
-        self.deliver(self.$addresses, function() {
-            console.log('delivered');
+    this.load(function() {
+        // Ship the items
+        self.deliver(self.parcels, function() {
             // Return the truck to its starting position.
             self.moveTo(self.settings.top, self.settings.left, function() {
                 // The truck is finished.
@@ -44,8 +37,7 @@ Parcel.Truck = function(options) {
 
 // Send the truck to the depot to pickup the
 // proper amount of parcels for delivery.
-Parcel.Truck.prototype.load = function(parcels, callback) {
-    parcels = parcels || 1;
+Parcel.Truck.prototype.load = function(callback) {
     callback = callback || function() { };
     // Find the depot
     var depotPos = this.getAddrParkPos(this.$depot);
@@ -53,12 +45,6 @@ Parcel.Truck.prototype.load = function(parcels, callback) {
     var self = this;
     this.moveTo(depotPos.top, depotPos.left, function() {
         self.settings.arrivedAtDepot.call(self);
-        // Pickup parcels
-        for (var i = 0; i < parcels; i++) {
-           self.parcels++; 
-           self.settings.collectedParcel.call(self);
-        }
-        self.settings.finishedLoading.call(self);
         callback();
     });
 };
@@ -66,8 +52,8 @@ Parcel.Truck.prototype.load = function(parcels, callback) {
 // Get the address where the truck should park for delivery.
 Parcel.Truck.prototype.getAddrParkPos = function(addr) {
     var pos = addr.position();
-    var top = pos.top + (addr.height() / 2 - this.$truck.height() / 2);
-    var left = pos.left - this.$truck.width();
+    var top = pos.top + (addr.height() / 2 - this.$el.height() / 2);
+    var left = pos.left - this.$el.width();
     return { top: top, left: left };
 };
 
@@ -78,7 +64,7 @@ Parcel.Truck.prototype.moveTo = function(top, left, callback) {
     callback = callback || function() { };
     var self = this;
     var speed = this.getSpeedTo(top, left);
-    this.$truck.animate({
+    this.$el.animate({
         top: top,
         left: left
     }, speed, function() {
@@ -86,23 +72,25 @@ Parcel.Truck.prototype.moveTo = function(top, left, callback) {
     });
 };
 
-// Deliver a parcel to a group of addresses(jqueryObjects).
+// Deliver parcels to their correct addresses.
 // Traveling sales man algorithm would be good here.
-Parcel.Truck.prototype.deliver = function(jqueryObjs, callback) {
+Parcel.Truck.prototype.deliver = function(parcels, callback) {
     callback = callback || function() { };
-    var addr = jqueryObjs.eq(0);
-    var pos = this.getAddrParkPos(addr);
+    var parcel = parcels[0];
+    var pos = this.getAddrParkPos(parcel.to.$el);
     var self = this;
     this.moveTo(pos.top, pos.left, function() {
         // Deliver the parcel
-        self.parcels--;
-        self.settings.deliveredParcel.call(self);
-        // Remove the address
-        jqueryObjs = jqueryObjs.not(jqueryObjs.eq(0));
-        if (jqueryObjs.length == 0)
+        self.settings.deliveredParcel.call(self, parcel);
+        // Remove the parcel from the beginning of the array.
+        parcels.shift();
+        // Update UI
+        self.updateNextStop();
+        self.updateParcels();
+        if (parcels.length == 0)
             return callback();
         // Recurse until all addresses have been visited.
-        self.deliver(jqueryObjs, callback);
+        self.deliver(parcels, callback);
     });
 };
 
@@ -110,7 +98,7 @@ Parcel.Truck.prototype.deliver = function(jqueryObjs, callback) {
 // the truck's current position to the given position.
 Parcel.Truck.prototype.getSpeedTo = function(top, left) {
     // get the distance
-    var truckPos = this.$truck.position();
+    var truckPos = this.$el.position();
     var xd = left - truckPos.left;
     var yd = top - truckPos.top;
     var dist = Math.sqrt(xd * xd + yd * yd);
@@ -118,7 +106,28 @@ Parcel.Truck.prototype.getSpeedTo = function(top, left) {
     return dist / this.settings.speed;
 };
 
+// Load a parcel onto the truck
+Parcel.Truck.prototype.add = function(parcel) {
+    if (!parcel instanceof Parcel.Parcel) return; 
+    this.parcels.push(parcel); 
+    this.updateNextStop();
+    this.updateParcels();
+};
+
 // Handle clearing the screen of a truck.
 Parcel.Truck.prototype.remove = function() {
-    this.$truck.remove();
+    this.$el.remove();
+};
+
+Parcel.Truck.prototype.updateNextStop = function() {
+    var ifEmpty = this.parcels.length == 0;
+    $('.truck-next-stop', this.$el)
+        .text(ifEmpty ? '' : this.parcels[0].to.address)
+        .css('display', ifEmpty ? 'none' : 'block');
+};
+
+Parcel.Truck.prototype.updateParcels = function() {
+    var parcelCnt = $('.truck-parcels', this.$el);
+    parcelCnt.data('cnt', this.parcels.length);
+    parcelCnt.text('+' + this.parcels.length);
 };

@@ -17,6 +17,12 @@ body {
     left: 23px;
 }
 
+.truck-next-stop {
+    position: absolute;
+    top: -30px;
+    display: none;
+}
+
 .parcel {
     width:5px; 
     height:5px;
@@ -40,6 +46,8 @@ body {
 } .delivery:hover .delivery-image {
     opacity: 0.75;
 } .delivery:hover .delivery-address {
+    opacity: 0.75;
+} .delivery:hover .delivery-storage {
     opacity: 0.75;
 }
 
@@ -76,7 +84,7 @@ body {
     background-color: #333;
 }
 
-.delivery-storage-header {
+.depot-storage-header {
     margin: 0;
     border-bottom: 1px solid #FFF;
     padding: 4px;
