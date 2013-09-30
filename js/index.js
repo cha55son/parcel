@@ -19,7 +19,8 @@
                     for (var i in parcels)
                         this.add(parcels[i]);
                 },
-                deliveredParcel: function() { 
+                deliveredParcel: function(parcel) { 
+                    parcel.to.receive(parcel);
                     // Drop present :)
                     var pos = this.$el.position();
                     var present = $('<div class="present"></div>').appendTo('body');

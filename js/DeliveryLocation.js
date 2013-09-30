@@ -8,8 +8,10 @@ Parcel.DeliveryLocation = function(options) {
         type: null,
         address: null // A unique address for this location. ex. 1678 or 6584 Lynnford Rd.
     }, options);
+    this.parcels = 0;
     if (this.settings.type === null || $.inArray(this.settings.type, this.types) === -1)
         this.settings.type = this.types[Math.floor(Math.random() * 3)];
+    // Create a random address if one is not provided.
     if (this.settings.address === null) {
         var streetNames = ['Lynnford', 'Sycamore', 'Clifdon', 'Pine', 'Maple', 'Cedar', 'Fourth', 'Fifth', 'Second', 'Hill', 'Lake'];
         var roads = ['Rd.', 'Ct.', 'Ln.', 'Hwy.'];
@@ -21,6 +23,7 @@ Parcel.DeliveryLocation = function(options) {
     this.$el = $([
         '<div class="', this.settings.type, ' delivery visit" data-addr="', this.address, '">',
             '<div class="delivery-image"></div>',
+            '<div class="delivery-received">Received: 0</div>',
             '<div class="delivery-address">', this.address, '</div>',
             '<div class="delivery-options">',
                 '<button class="btn btn-sm btn-default delivery-order">Order</button>',
@@ -37,4 +40,8 @@ Parcel.DeliveryLocation = function(options) {
 // Triggers a window event to request an order.
 Parcel.DeliveryLocation.prototype.order = function() {
     $(window).trigger('Parcel.DeliveryLocation.Order', { location: this });
+};
+
+Parcel.DeliveryLocation.prototype.receive = function(parcel) {
+    $('.delivery-received', this.$el).text('Received: ' + ++this.parcels);
 };
